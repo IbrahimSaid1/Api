@@ -1,6 +1,7 @@
 package ApiJson;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.sql.Connection;
@@ -9,6 +10,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.List;
 import java.util.Scanner;
 import com.google.gson.Gson;
 
@@ -20,7 +22,7 @@ public class Json {
 		
 		
 		Scanner sca= new Scanner(System.in);
-		
+		String country = null;
 		
 		 String apiUrl = "http://universities.hipolabs.com/search?country=Oman";
 		 try {
@@ -56,6 +58,17 @@ public class Json {
 			con = DriverManager.getConnection(url1, user, pass);
 			Statement st = con.createStatement();
 		 
+			
+			
+		boolean condition= true;
+		while(condition) {
+		 System.out.println("1. Creat tables");
+		 System.out.println("2. Insert data into table");
+		 System.out.println("3. fetch data");
+		 System.out.println("4. Taking backup");
+		 System.out.println("5. Drop table");
+		 System.out.println("6. Exit");
+
 		 int a = sca.nextInt();
 		 switch (a) {
 		 case 1:
@@ -74,7 +87,7 @@ public class Json {
 		 case 2:
 			
 		 System.out.print("Enter the country: ");
-		 String country= sca.next();
+		 country= sca.next();
 			
 	     System.out.println("Universities in " + country + ":");
 	     System.out.println(myObj);
@@ -97,35 +110,62 @@ public class Json {
 		 case 3:
 			
 	     System.out.print("Enter the country: ");
-		 String country1= sca.next();
+		 country= sca.next();
 		 
 		 
 
-			String sql1 = "SELECT * FROM mytable WHERE country= '" + country1 + "'";
+			String sql1 = "SELECT * FROM mytable WHERE country= '" + country + "'";
 			ResultSet resultSet = st.executeQuery(sql1);
 			System.out.println("-------------------------------------------------------------------");
-			System.out.println("                Universities in " + country1 + ":");
+			System.out.println("                Universities in " + country + ":");
 			System.out.println("-------------------------------------------------------------------");
 			while (resultSet.next()) {
 				String name = resultSet.getString("name");
 				String webPage = resultSet.getString("webpages");
 				String domain = resultSet.getString("domains");
 				System.out.println("----------------------------------------------------------");
-
-
-
-				 System.out.println(name +  " | "+"\t" + domain +  " | "+"\t"  + webPage);
+				 System.out.println(name +  " | "+ "\t" + domain +  " | "+ "\t"  + webPage);
 			}
 
 			resultSet.close();
 		 break;
 		 
 		 
-	     
+		 case 4:
+				 resultSet = st.executeQuery("SELECT * FROM mytable");
+				 PrintWriter writer = new PrintWriter("backup.sql");
+				 writer.println("-------------------------------------------------------------------");
+				 writer.println("                Universities:");
+				 writer.println("-------------------------------------------------------------------");
+					while (resultSet.next()) {
+						String name = resultSet.getString("name");
+						String webPage = resultSet.getString("webpages");
+						String domain = resultSet.getString("domains");
+						writer.println("----------------------------------------------------------");
+						writer.println(name +  " | "+ "\t" + domain +  " | "+ "\t"  + webPage);
+					}
+					writer.close();
+				System.out.println("Data dumped to file successfully.");
+				break;
+		      
+		 case 5:
+			 String sql2 = "DROP TABLE mytable";
+	         st.executeUpdate(sql2);
+	         System.out.println("Table removed successfully.");
+	         break;
+	         
+		 case 6:
+	     condition= false;
 		 }
+		}
 	        } catch (Exception e) {
 	            e.printStackTrace();
 	        }
 		
+	}
+
+	private static List<MyObject> getAllUniversities() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
